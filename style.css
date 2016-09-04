@@ -1,0 +1,23 @@
+.kne-hint {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  padding: 2px;
+  background-color: #ff0000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  /*border: 1px solid #ccc;*/
+}
+
+.kne-highlighted {
+  background-color: #eeef00;
+  color: #222;
+  position: relative;
+}
+
+.kne-highlighted-active {
+  background-color: #0000ff;
+  color: #fff;
+}
