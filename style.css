@@ -2,22 +2,22 @@
   position: absolute;
   left: 0;
   top: 0;
+  height: 14px;
 
-  padding: 2px;
-  background-color: #ff0000;
+  padding: 0 2px;
+
+  background-color: #63ace5;
   color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  /*border: 1px solid #ccc;*/
+  font-size: 10px;
 }
 
 .kne-highlighted {
-  background-color: #eeef00;
-  color: #222;
+  background-color: #fdfe02;
+  color: #111;
   position: relative;
 }
 
 .kne-highlighted-active {
-  background-color: #0000ff;
+  background-color: #adcbe3;
   color: #fff;
 }
