@@ -1,5 +1,5 @@
 /******************************
- * Keyboard navigation - a chrome extension
+ * Keyboard navigation - a Chrome extension
  *
  * UX is heavily inspired by Conkeror, probably the best keyboard-base browser out there.
  *
@@ -7,11 +7,7 @@
  * Source: https://github.com/dermatthias/keyboardnav
  */
 var DEBUG = true;
-
 var chosenLinkId = '';
-var timeoutId = -1;
-var delay = 200;
-
 var keys = {
   48: 0,
   49: 1,
@@ -37,15 +33,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // Highlight links
   //****************
   if (request.action == 'highlight') {
-
-
-    // resettting all values on main shortcut
+    // Resetting previous values on main shortcut
     chosenLinkId = '';
-    clearTimeout(timeoutId);
-    timeoutId = -1;
 
-
-    // highlightning links
+    // Highlighting links
     var links = $('a').addClass('kne-highlighted');
     $(links).each(function (index, element) {
       var linkid = index+1;
@@ -54,28 +45,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       $(element).append(hint);
     });
 
-
     // start number listener
     $(window).on('keyup', function (event) {
 
       // 48 = digit 0, 57 = digit 9
       if (event.which >= 48 && event.which <= 57) {
-
-        // start timeout on the first character, reset on second and more charater
-        if (chosenLinkId == '') {
-          timeoutId = setTimeout(highlightChosen, delay);
-          log('starting initial timeout ' + timeoutId);
-        } else {
-          log('clearing and resetting timeout ' + timeoutId);
-          clearTimeout(timeoutId);
-          timeoutId = setTimeout(highlightChosen, delay);
-        }
-
         chosenLinkId += ('' + keys[event.which]);
         log('chosenLinkId: ' + chosenLinkId);
-
+        highlightChosen();
       }
 
+      // Enter pressed. Go there if marked link was found.
       if (event.which == 13) {
         var url = $('a.kne-highlighted-active').attr('href');
         if (url) {
@@ -83,13 +63,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         }
       }
 
-      // escape
+      // Backspace
+      if (event.which == 8) {
+        // Remove last digit
+        chosenLinkId = chosenLinkId.substring(0, chosenLinkId.length-1);
+        highlightChosen();
+        if (chosenLinkId.length == 0) {
+          //clear();
+        }
+      }
+
+      // Escape pressed. Undo everything.
       if (event.which == 27) {
-        $('a[data-knelinkid]').removeClass('kne-highlighted-active');
-        $('a[data-knelinkid]').removeClass('kne-highlighted');
-        $('a[data-knelinkid]').removeAttr('data-knelinkid');
-        $('a .kne-hint').remove();
-        $(window).off('keyup');
+        clear();
       }
 
     });
@@ -100,23 +86,26 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 });
 
+function clear() {
+  var link = $('a[data-knelinkid]');
+  link.removeClass('kne-highlighted-active');
+  link.removeClass('kne-highlighted');
+  link.removeAttr('data-knelinkid');
+  $('a .kne-hint').remove();
+  $(window).off('keyup');
+}
+
 function highlightChosen() {
-  // reset all colors
+  // Reset all colors
   $('a[data-knelinkid]').removeClass('kne-highlighted-active');
 
   log('Chosen key: '+chosenLinkId);
   var chosenLink = $('a[data-knelinkid='+chosenLinkId+']');
 
-  // change background of chosen link
+  // Change background of chosen link
   chosenLink.addClass('kne-highlighted-active');
-
-  chosenLinkId = '';
-  timeoutId = -1;
 }
-
-
 
 function log(o) {
   if (DEBUG) console.log(o);
 }
-
